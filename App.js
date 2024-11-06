@@ -59,24 +59,33 @@ export default function App() {
   };
 
   const handleSubmit = () => {
-    let correctCount = 0;
+    if (answers.includes(null)) {
+      // Alert if any question is unanswered
+      Alert.alert(
+          'Please answer all questions before submitting!',
+          'It looks like you haven\'t answered all the questions yet.',
+          [{ text: 'OK' }]
+      );
+    } else {
+      let correctCount = 0;
 
-    answers.forEach((answer, index) => {
-      if (answer === questions[index].correctAnswer) {
-        correctCount++;
-      }
-    });
+      answers.forEach((answer, index) => {
+        if (answer === questions[index].correctAnswer) {
+          correctCount++;
+        }
+      });
 
-    Alert.alert(
-        `You got ${correctCount} out of ${questions.length} correct!`,
-        'Would you like to retry the current quiz or start a new quiz?',
-        [
-          { text: 'Retry Quiz', onPress: () => setQuizFinished(false) },
-          { text: 'New Quiz', onPress: resetQuiz },
-        ]
-    );
+      Alert.alert(
+          `You got ${correctCount} out of ${questions.length} correct!`,
+          'Would you like to retry the current quiz or start a new quiz?',
+          [
+            { text: 'Retry Quiz', onPress: () => setQuizFinished(false) },
+            { text: 'New Quiz', onPress: resetQuiz },
+          ]
+      );
 
-    setQuizFinished(true);
+      setQuizFinished(true);
+    }
   };
 
   const resetQuiz = () => {
@@ -87,26 +96,30 @@ export default function App() {
 
   return (
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>Animal Quiz</Text>
-        {questions.map((question, index) => (
-            <View key={index} style={styles.questionContainer}>
-              <Image source={question.image} style={styles.image} />
-              <Text style={styles.questionText}>What animal is this?</Text>
-              <RNPickerSelect
-                  onValueChange={(value) => handleAnswerChange(index, value)}
-                  items={question.options}
-                  placeholder={{ label: 'Select an answer', value: null }}
-                  style={pickerSelectStyles}
-                  value={answers[index]}
-              />
-            </View>
-        ))}
-        <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={quizFinished}>
-          <Text style={styles.buttonText}>Submit Answers</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={resetQuiz}>
-          <Text style={styles.buttonText}>Reset Quiz</Text>
-        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Animal Quiz</Text>
+        </View>
+        <View style={styles.quizContainer}>
+          {questions.map((question, index) => (
+              <View key={index} style={styles.questionContainer}>
+                <Image source={question.image} style={styles.image} />
+                <Text style={styles.questionText}>What animal is this?</Text>
+                <RNPickerSelect
+                    onValueChange={(value) => handleAnswerChange(index, value)}
+                    items={question.options}
+                    placeholder={{ label: 'Select an answer', value: null }}
+                    style={pickerSelectStyles}
+                    value={answers[index]}
+                />
+              </View>
+          ))}
+          <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={quizFinished}>
+            <Text style={styles.buttonText}>Submit Answers</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={resetQuiz}>
+            <Text style={styles.buttonText}>Reset Quiz</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
   );
 }
@@ -117,12 +130,32 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f7f9fc',
   },
+  titleContainer: {
+    backgroundColor: '#f0f0f0', // Light grey background for header
+    padding: 15,
+    borderRadius: 8,
+    elevation: 5, // Adds a shadow effect on Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    marginBottom: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingTop: 50,
-    paddingBottom: 20,
+    color: '#333',
+  },
+  quizContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+    elevation: 5, // Adds a shadow effect on Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
   questionContainer: {
     marginBottom: 20,
@@ -142,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#fff',
